@@ -7,6 +7,9 @@ import org.pneditor.petrinet.AbstractTransition;
 import org.pneditor.petrinet.PetriNetInterface;
 import org.pneditor.petrinet.ResetArcMultiplicityException;
 import org.pneditor.petrinet.UnimplementedCaseException;
+import org.pneditor.petrinet.models.cazinhubert.Arc;
+import org.pneditor.petrinet.models.cazinhubert.ArcClassic;
+import org.pneditor.petrinet.models.cazinhubert.ArcTransitionToPlace;
 import org.pneditor.petrinet.models.cazinhubert.NotExistArcException;
 import org.pneditor.petrinet.models.cazinhubert.NotExistTransitionException;
 import org.pneditor.petrinet.models.cazinhubert.Petrinet;
@@ -41,7 +44,41 @@ public class PetriNetAdapter extends PetriNetInterface{
 
 	@Override
 	public AbstractArc addRegularArc(AbstractNode source, AbstractNode destination) throws UnimplementedCaseException {
-		// TODO Auto-generated method stub
+		try
+		{
+			if(source instanceof PlaceAdapter && destination instanceof TransitionAdapter)
+			{
+				PlaceAdapter p = (PlaceAdapter) source;
+				TransitionAdapter t = (TransitionAdapter) destination;
+				
+				pn.addPlace(p.getPlace());
+				pn.addTransition(t.getTransition());
+				
+				pn.addArcClassique(1, p.getPlace(), t.getTransition());
+				
+				System.out.println("ajout d'un arc p to t");
+				return new ArcAdapter(new ArcClassic(1, p.getPlace(), t.getTransition()), p, t);
+			}
+			else if(source instanceof TransitionAdapter && destination instanceof PlaceAdapter)
+			{
+				PlaceAdapter p = (PlaceAdapter) destination;
+				TransitionAdapter t = (TransitionAdapter) source;
+				
+				pn.addPlace(p.getPlace());
+				pn.addTransition(t.getTransition());
+				
+				pn.addArcTToP(t.getTransition(), p.getPlace(), 1);
+				
+				System.out.println("ajout d'un arc t to p");
+				return new ArcAdapter(new ArcTransitionToPlace(t.getTransition(), p.getPlace(), 1), t, p);
+			}
+			throw new UnimplementedCaseException("");
+				
+		}
+		catch(Exception e)
+		{
+			System.err.println("Impossible de créer l'arc classique");
+		}
 		return null;
 	}
 
