@@ -77,11 +77,14 @@ public class PetriNetAdapter extends PetriNetInterface{
 				System.out.println("ajout d'un arc t to p");
 				return new ArcAdapter(new ArcTransitionToPlace(t.getTransition(), p.getPlace(), 1), t, p, 1);
 			}
-			throw new UnimplementedCaseException("");
+			else
+				throw new UnimplementedCaseException("");
+			
 				
 		}
 		catch(Exception e)
 		{
+			System.out.println(e);
 			System.err.println("Impossible de créer l'arc classique");
 		}
 		return null;
@@ -171,7 +174,11 @@ public class PetriNetAdapter extends PetriNetInterface{
 
 	@Override
 	public boolean isEnabled(AbstractTransition transition) throws ResetArcMultiplicityException {
-		// TODO Auto-generated method stub
+		try {
+			return ((TransitionAdapter) transition).isEnabled();
+		} catch (Exception e) {
+			System.err.println("Impossible d'évaluer la tirabilité de la transition");
+		}
 		return false;
 	}
 

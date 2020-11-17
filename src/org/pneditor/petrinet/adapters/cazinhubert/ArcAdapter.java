@@ -6,6 +6,7 @@ import org.pneditor.petrinet.ResetArcMultiplicityException;
 import org.pneditor.petrinet.models.cazinhubert.Arc;
 import org.pneditor.petrinet.models.cazinhubert.ArcBouncer;
 import org.pneditor.petrinet.models.cazinhubert.ArcClassic;
+import org.pneditor.petrinet.models.cazinhubert.ArcPlaceToTransition;
 import org.pneditor.petrinet.models.cazinhubert.ArcTransitionToPlace;
 import org.pneditor.petrinet.models.cazinhubert.ArcZero;
 
@@ -25,6 +26,12 @@ public class ArcAdapter extends AbstractArc{
 			this.multiplicity = multiplicity;
         else
         	this.multiplicity = -1;
+        
+        if(arc instanceof ArcTransitionToPlace)
+        	((TransitionAdapter) source).addArcSortant(this);
+        else
+        	((TransitionAdapter) destination).addArcEntrant(this);
+        	
     }
 	
 	public Arc getArc()
@@ -99,6 +106,14 @@ public class ArcAdapter extends AbstractArc{
 			System.err.println("Impossible de modifier la multiplicité, arc zero ou arc videur");
 		}
 		
+	}
+	
+	public boolean isEnabled()
+	{
+		if(this.arc instanceof ArcPlaceToTransition)
+			return ((ArcPlaceToTransition) arc).pullArc();
+		else
+			return false;
 	}
 
 }
