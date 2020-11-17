@@ -47,5 +47,10 @@ public class PlaceAdapter extends AbstractPlace{
 			return;
 		
 	}
+	
+	public Place getPlace()
+	{
+		return p;
+	}
 
 }

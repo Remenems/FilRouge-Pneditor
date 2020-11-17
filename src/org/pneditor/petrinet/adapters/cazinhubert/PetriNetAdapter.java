@@ -61,15 +61,28 @@ public class PetriNetAdapter extends PetriNetInterface{
 
 	@Override
 	public void removePlace(AbstractPlace place) {
-		// TODO Auto-generated method stub
+		try
+		{
+			PlaceAdapter p = (PlaceAdapter) place;
+			pn.removePlace(p.getPlace());
+		}
+		catch(Exception e)
+		{
+			System.err.println("Impossible de supprimer la place");
+		}
 		
 	}
 
 	@Override
 	public void removeTransition(AbstractTransition transition){
-		
-		//TransitionAdapter t = (TransitionAdapter) transition;
-		//pn.removeTransition(t.getTransition());
+		try {
+			TransitionAdapter t = (TransitionAdapter) transition;
+			pn.removeTransition(t.getTransition());
+		}
+		catch(Exception e)
+		{
+			System.err.println("Impossible de supprimer la transition");
+		}
 			
 	}
 
