@@ -1,5 +1,7 @@
 package org.pneditor.petrinet.adapters.cazinhubert;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import org.pneditor.petrinet.AbstractArc;
 import org.pneditor.petrinet.AbstractNode;
 import org.pneditor.petrinet.ResetArcMultiplicityException;
@@ -66,7 +68,8 @@ public class ArcAdapter extends AbstractArc{
 
 	@Override
 	public int getMultiplicity() throws ResetArcMultiplicityException {
-		try
+		return this.multiplicity;
+		/*try
 		{
 			if(multiplicity != -1)
 				return multiplicity;
@@ -77,17 +80,17 @@ public class ArcAdapter extends AbstractArc{
 		{
 			System.err.println("Impossible de récuperer la multiplicité, arc zero ou arc videur");
 		}
-		return this.multiplicity;
+		return this.multiplicity;*/
 	}
 
 	@Override
 	public void setMultiplicity(int multiplicity) throws ResetArcMultiplicityException {
-		try
-		{
+		try {
 			if(arc instanceof ArcClassic)
 			{
 				PlaceAdapter p = (PlaceAdapter) this.source;
 				TransitionAdapter t = (TransitionAdapter) this.destination;
+				this.multiplicity = multiplicity;
 				
 				arc = new ArcClassic(multiplicity, p.getPlace(), t.getTransition());
 			}
@@ -95,21 +98,51 @@ public class ArcAdapter extends AbstractArc{
 			{
 				PlaceAdapter p = (PlaceAdapter) this.destination;
 				TransitionAdapter t = (TransitionAdapter) this.source;
+				this.multiplicity = multiplicity;
 				
 				arc = new ArcTransitionToPlace(t.getTransition(), p.getPlace(), multiplicity);
+			}
+			else if(arc instanceof ArcZero)
+			{
+				PlaceAdapter p = (PlaceAdapter) this.source;
+				TransitionAdapter t = (TransitionAdapter) this.destination;
+				this.multiplicity = 0;
+				
+				arc = new ArcZero(p.getPlace(), t.getTransition());
+			}
+			else if(arc instanceof ArcBouncer)
+			{
+				PlaceAdapter p = (PlaceAdapter) this.source;
+				TransitionAdapter t = (TransitionAdapter) this.destination;
+				this.multiplicity = -1;
+				
+				arc = new ArcBouncer(p.getPlace(), t.getTransition());
 			}
 			else
 				throw new ResetArcMultiplicityException();
 		}
-		catch(ResetArcMultiplicityException e)
+		catch(Exception e)
 		{
-			System.err.println("Impossible de modifier la multiplicité, arc zero ou arc videur");
+			System.out.println(e);
+			System.err.println("Impossible de modifier la multiplicité");
 		}
 		
+		
+	}
+	
+	public void moveTokenArc()
+	{
+		if(this.arc instanceof ArcPlaceToTransition)
+			((ArcPlaceToTransition) arc).moveTokenArc();
+		else if(this.arc instanceof ArcTransitionToPlace)
+			((ArcTransitionToPlace) arc).fillInArc();
 	}
 	
 	public boolean isEnabled()
 	{
+		if(this.arc instanceof ArcZero) {
+			System.out.println(((PlaceAdapter) source).getTokens());
+			return ((PlaceAdapter) source).getTokens() == 0;}
 		if(this.arc instanceof ArcPlaceToTransition)
 			return ((ArcPlaceToTransition) arc).pullArc();
 		else

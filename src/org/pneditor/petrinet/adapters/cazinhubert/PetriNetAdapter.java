@@ -1,7 +1,5 @@
 package org.pneditor.petrinet.adapters.cazinhubert;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import org.pneditor.petrinet.AbstractArc;
 import org.pneditor.petrinet.AbstractNode;
 import org.pneditor.petrinet.AbstractPlace;
@@ -49,20 +47,18 @@ public class PetriNetAdapter extends PetriNetInterface{
 
 	@Override
 	public AbstractArc addRegularArc(AbstractNode source, AbstractNode destination) throws UnimplementedCaseException {
-		try
-		{
+		/*try
+		{*/
 			if(source instanceof PlaceAdapter && destination instanceof TransitionAdapter)
 			{
 				PlaceAdapter p = (PlaceAdapter) source;
 				TransitionAdapter t = (TransitionAdapter) destination;
 				
-				pn.addPlace(p.getPlace());
-				pn.addTransition(t.getTransition());
-				
 				pn.addArcClassique(1, p.getPlace(), t.getTransition());
 				
 				System.out.println("ajout d'un arc p to t");
-				return new ArcAdapter(new ArcClassic(1, p.getPlace(), t.getTransition()), p, t, 1);
+				System.out.println(pn.getArcPToT());
+				return new ArcAdapter(pn.getArcPToT().getLast(), p, t, 1);
 			}
 			else if(source instanceof TransitionAdapter && destination instanceof PlaceAdapter)
 			{
@@ -75,9 +71,10 @@ public class PetriNetAdapter extends PetriNetInterface{
 				pn.addArcTToP(t.getTransition(), p.getPlace(), 1);
 				
 				System.out.println("ajout d'un arc t to p");
-				return new ArcAdapter(new ArcTransitionToPlace(t.getTransition(), p.getPlace(), 1), t, p, 1);
+				return new ArcAdapter(pn.getArcTToP().getLast(), t, p, 1);
 			}
-			else
+			return null;
+			/*else
 				throw new UnimplementedCaseException("");
 			
 				
@@ -87,7 +84,7 @@ public class PetriNetAdapter extends PetriNetInterface{
 			System.out.println(e);
 			System.err.println("Impossible de créer l'arc classique");
 		}
-		return null;
+		return null;*/
 	}
 
 	@Override
@@ -99,10 +96,11 @@ public class PetriNetAdapter extends PetriNetInterface{
 			
 			pn.addArcZero(p.getPlace(), t.getTransition());
 			System.out.println("ajout d'un arc zero (p to t)");
-			return new ArcAdapter(new ArcZero(p.getPlace(), t.getTransition()), place, transition, -1);
+			return new ArcAdapter(pn.getArcPToT().getLast(), place, transition, -1);
 		}
 		catch (Exception e) {
 			System.err.println("Impossible de créer l'arc zero");
+			System.out.println(e);
 		}
 		return null;
 	}
@@ -116,10 +114,11 @@ public class PetriNetAdapter extends PetriNetInterface{
 			
 			pn.addArcVideur(p.getPlace(), t.getTransition());
 			System.out.println("ajout d'un arc videur (p to t)");
-			return new ArcAdapter(new ArcBouncer(p.getPlace(), t.getTransition()), place, transition, -1);
+			return new ArcAdapter(pn.getArcPToT().getLast(), place, transition, -1);
 		}
 		catch (Exception e) {
 			System.err.println("Impossible de créer l'arc videur");
+			System.out.println(e);
 		}
 		return null;
 	}
@@ -130,10 +129,12 @@ public class PetriNetAdapter extends PetriNetInterface{
 		{
 			PlaceAdapter p = (PlaceAdapter) place;
 			pn.removePlace(p.getPlace());
+			System.out.println("Place supprimée");
 		}
 		catch(Exception e)
 		{
 			System.err.println("Impossible de supprimer la place");
+			System.out.println(e);
 		}
 		
 	}
@@ -143,10 +144,12 @@ public class PetriNetAdapter extends PetriNetInterface{
 		try {
 			TransitionAdapter t = (TransitionAdapter) transition;
 			pn.removeTransition(t.getTransition());
+			System.out.println("Transition supprimée");
 		}
 		catch(Exception e)
 		{
 			System.err.println("Impossible de supprimer la transition");
+			System.out.println(e);
 		}
 			
 	}
@@ -160,15 +163,18 @@ public class PetriNetAdapter extends PetriNetInterface{
 			{
 				ArcTransitionToPlace attop = (ArcTransitionToPlace) a;
 				pn.removeArcTToP(attop);
+				System.out.println("Arc ttopp supprimé");
 			}
 			else
 			{
 				ArcPlaceToTransition aptot = (ArcPlaceToTransition) a;
 				pn.removeArcPToT(aptot);
+				System.out.println("Arc ptot supprimé");
 			}				
 		}
 		catch (Exception e) {
 			System.err.println("Impossible de supprimer l'arc");
+			System.out.println(e);
 		}
 	}
 
@@ -178,13 +184,20 @@ public class PetriNetAdapter extends PetriNetInterface{
 			return ((TransitionAdapter) transition).isEnabled();
 		} catch (Exception e) {
 			System.err.println("Impossible d'évaluer la tirabilité de la transition");
+			System.out.println(e);
 		}
 		return false;
 	}
 
 	@Override
 	public void fire(AbstractTransition transition) throws ResetArcMultiplicityException {
-		// TODO Auto-generated method stub
+		try {
+			((TransitionAdapter) transition).fire();
+		}
+		catch (Exception e) {
+			System.err.println("Impossible de tirer la transition");
+			System.out.println(e);
+		}
 		
 	}
 

@@ -17,6 +17,9 @@ public class TransitionAdapter extends AbstractTransition{
 		super(t.getName());
 		this.t = t;
 		
+		arcsEntrants = new LinkedList<ArcAdapter>();
+		arcsSortants = new LinkedList<ArcAdapter>();
+		
 	}
 	
 	public TransitionAdapter(String label) {
@@ -32,7 +35,7 @@ public class TransitionAdapter extends AbstractTransition{
 	
 	public void addArcEntrant(ArcAdapter arc)
 	{
-		arcsEntrants.add(arc);
+		this.arcsEntrants.add(arc);
 	}
 	
 	public void addArcSortant(ArcAdapter arc)
@@ -47,6 +50,20 @@ public class TransitionAdapter extends AbstractTransition{
 				return false;
 		}
 		return true;
+	}
+	
+	public void fire()
+	{
+		if(this.isEnabled())
+		{
+			for(ArcAdapter ae : arcsEntrants) {
+				ae.moveTokenArc();
+			}
+			for(ArcAdapter as : arcsSortants)
+			{
+				as.moveTokenArc();
+			}
+		}
 	}
 
 }
