@@ -68,8 +68,8 @@ public class ArcAdapter extends AbstractArc{
 
 	@Override
 	public int getMultiplicity() throws ResetArcMultiplicityException {
-		return this.multiplicity;
-		/*try
+		
+		try
 		{
 			if(multiplicity != -1)
 				return multiplicity;
@@ -80,46 +80,24 @@ public class ArcAdapter extends AbstractArc{
 		{
 			System.err.println("Impossible de récuperer la multiplicité, arc zero ou arc videur");
 		}
-		return this.multiplicity;*/
+		return this.multiplicity;
 	}
 
 	@Override
 	public void setMultiplicity(int multiplicity) throws ResetArcMultiplicityException {
 		try {
-			if(arc instanceof ArcClassic)
+			if(arc instanceof ArcBouncer)
 			{
-				PlaceAdapter p = (PlaceAdapter) this.source;
-				TransitionAdapter t = (TransitionAdapter) this.destination;
-				this.multiplicity = multiplicity;
-				
-				arc = new ArcClassic(multiplicity, p.getPlace(), t.getTransition());
-			}
-			else if(arc instanceof ArcTransitionToPlace)
-			{
-				PlaceAdapter p = (PlaceAdapter) this.destination;
-				TransitionAdapter t = (TransitionAdapter) this.source;
-				this.multiplicity = multiplicity;
-				
-				arc = new ArcTransitionToPlace(t.getTransition(), p.getPlace(), multiplicity);
-			}
-			else if(arc instanceof ArcZero)
-			{
-				PlaceAdapter p = (PlaceAdapter) this.source;
-				TransitionAdapter t = (TransitionAdapter) this.destination;
-				this.multiplicity = 0;
-				
-				arc = new ArcZero(p.getPlace(), t.getTransition());
-			}
-			else if(arc instanceof ArcBouncer)
-			{
-				PlaceAdapter p = (PlaceAdapter) this.source;
-				TransitionAdapter t = (TransitionAdapter) this.destination;
-				this.multiplicity = -1;
-				
-				arc = new ArcBouncer(p.getPlace(), t.getTransition());
+				throw new ResetArcMultiplicityException();
 			}
 			else
-				throw new ResetArcMultiplicityException();
+			{
+				this.multiplicity = multiplicity;
+				if(arc instanceof ArcTransitionToPlace)
+					((ArcTransitionToPlace) arc).setPoids(multiplicity);
+				else if(arc instanceof ArcClassic)
+					((ArcClassic) arc).setPoids(multiplicity);
+			}
 		}
 		catch(Exception e)
 		{
@@ -141,7 +119,6 @@ public class ArcAdapter extends AbstractArc{
 	public boolean isEnabled()
 	{
 		if(this.arc instanceof ArcZero) {
-			System.out.println(((PlaceAdapter) source).getTokens());
 			return ((PlaceAdapter) source).getTokens() == 0;}
 		if(this.arc instanceof ArcPlaceToTransition)
 			return ((ArcPlaceToTransition) arc).pullArc();

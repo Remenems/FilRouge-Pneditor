@@ -43,6 +43,16 @@ public class TransitionAdapter extends AbstractTransition{
 		arcsSortants.add(arc);
 	}
 	
+	public void removeArcSortant(ArcAdapter arc)
+	{
+		arcsSortants.remove(arc);
+	}
+	
+	public void removeArcEntrant(ArcAdapter arc)
+	{
+		arcsEntrants.remove(arc);
+	}
+	
 	public boolean isEnabled()
 	{
 		for (ArcAdapter a : arcsEntrants) {

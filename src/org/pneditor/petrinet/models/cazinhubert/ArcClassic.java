@@ -34,4 +34,9 @@ public class ArcClassic extends ArcPlaceToTransition {
 	{
 		return this.poids;
 	}
+	
+	public void setPoids(int newPoids)
+	{
+		this.poids = newPoids;
+	}
 }

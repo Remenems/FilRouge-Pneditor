@@ -49,15 +49,22 @@ public class Transition {
 		arcsSortants.add(arc);
 	}
 	
-	/** Les m�thodes removeArcSortant et removeArcEntrant enl�vent l'arc pass� en argument aux listes en attribut de la classe */
-	public void removeArcSortant(ArcTransitionToPlace arc)
+	/** Les m�thodes removeArcSortant et removeArcEntrant enl�vent l'arc pass� en argument aux listes en attribut de la classe 
+	 * @throws NotExistArcException */
+	public void removeArcSortant(ArcTransitionToPlace arc) throws NotExistArcException
 	{
-		this.arcsSortants.remove(arc);
+		if(arcsSortants.contains(arc))
+			this.arcsSortants.remove(arc);
+		else
+			throw new NotExistArcException();
 	}
 	
-	public void removeArcEntrant(ArcPlaceToTransition arc)
+	public void removeArcEntrant(ArcPlaceToTransition arc) throws NotExistArcException
 	{
-		this.arcsEntrants.remove(arc);
+		if(arcsEntrants.contains(arc))
+			this.arcsEntrants.remove(arc);
+		else
+			throw new NotExistArcException();
 	}
 	
 	/**

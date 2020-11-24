@@ -23,4 +23,14 @@ public class ArcTransitionToPlace extends Arc{
 		/** s'occupe de remplir la place associ�e � l'arc */
 		this.getPlace().addTokens(poids);
 	}
+	
+	public int getPoids()
+	{
+		return this.poids;
+	}
+	
+	public void setPoids(int newPoids)
+	{
+		this.poids = newPoids;
+	}
 }

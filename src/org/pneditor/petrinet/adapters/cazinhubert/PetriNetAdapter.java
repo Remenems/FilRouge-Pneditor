@@ -1,5 +1,9 @@
 package org.pneditor.petrinet.adapters.cazinhubert;
 
+
+
+import java.util.LinkedList;
+
 import org.pneditor.petrinet.AbstractArc;
 import org.pneditor.petrinet.AbstractNode;
 import org.pneditor.petrinet.AbstractPlace;
@@ -22,10 +26,12 @@ import org.pneditor.petrinet.models.cazinhubert.Transition;
 public class PetriNetAdapter extends PetriNetInterface{
 	
 	private Petrinet pn;
+	private LinkedList<TransitionAdapter> transitions;
 
 	public PetriNetAdapter()
 	{
-		this.pn = new Petrinet();
+		pn = new Petrinet();
+		transitions = new LinkedList<TransitionAdapter>();
 	}
 	
 	@Override
@@ -41,14 +47,15 @@ public class PetriNetAdapter extends PetriNetInterface{
 		Transition t = new Transition();
 		pn.addTransition(t);
 		System.out.println("Ajout de transition");
-		return new TransitionAdapter(t);
+		TransitionAdapter tA = new TransitionAdapter(t);
+		this.transitions.add(tA);
+		return tA;
 
 	}
 
 	@Override
 	public AbstractArc addRegularArc(AbstractNode source, AbstractNode destination) throws UnimplementedCaseException {
-		/*try
-		{*/
+		
 			if(source instanceof PlaceAdapter && destination instanceof TransitionAdapter)
 			{
 				PlaceAdapter p = (PlaceAdapter) source;
@@ -74,17 +81,7 @@ public class PetriNetAdapter extends PetriNetInterface{
 				return new ArcAdapter(pn.getArcTToP().getLast(), t, p, 1);
 			}
 			return null;
-			/*else
-				throw new UnimplementedCaseException("");
 			
-				
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-			System.err.println("Impossible de créer l'arc classique");
-		}
-		return null;*/
 	}
 
 	@Override
@@ -161,15 +158,22 @@ public class PetriNetAdapter extends PetriNetInterface{
 			Arc a = ((ArcAdapter) arc).getArc();
 			if(a instanceof ArcTransitionToPlace)
 			{
+				ArcAdapter aA = (ArcAdapter) arc;
+				TransitionAdapter tA = (TransitionAdapter)aA.getSource();
 				ArcTransitionToPlace attop = (ArcTransitionToPlace) a;
-				pn.removeArcTToP(attop);
 				System.out.println("Arc ttopp supprimé");
+				pn.removeArcTToP(attop);
+				tA.removeArcSortant(aA);
 			}
 			else
 			{
+				ArcAdapter aA = (ArcAdapter) arc;
+				TransitionAdapter tA = (TransitionAdapter)aA.getDestination();
 				ArcPlaceToTransition aptot = (ArcPlaceToTransition) a;
-				pn.removeArcPToT(aptot);
 				System.out.println("Arc ptot supprimé");
+				pn.removeArcPToT(aptot);
+				tA.removeArcEntrant(aA);
+				
 			}				
 		}
 		catch (Exception e) {
